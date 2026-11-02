@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Paquillo Events</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#f3f0ff;--card:#fff;--ink:#1d1b4f;--mut:#5c5a8a;--pk:#e6246b;--yl:#ffc933;--mint:#12a97a;--ln:#cfc9f5;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14123a;--card:#1f1c57;--ink:#f2efff;--mut:#b5b0ee;--pk:#ff4f93;--yl:#ffd23f;--mint:#3ddc97;--ln:#3a3690;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14123a;--card:#1f1c57;--ink:#f2efff;--mut:#b5b0ee;--pk:#ff4f93;--yl:#ffd23f;--mint:#3ddc97;--ln:#3a3690;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background-color:var(--bg);background-image:radial-gradient(circle 420px at 96% 700px,rgba(255,201,51,.34),transparent),radial-gradient(circle 460px at 2% 1450px,rgba(230,36,107,.22),transparent),radial-gradient(circle 420px at 98% 2250px,rgba(18,169,122,.24),transparent),radial-gradient(circle 460px at 2% 3000px,rgba(230,36,107,.2),transparent),radial-gradient(rgba(120,100,220,.24) 1.3px,transparent 1.8px);background-size:auto,auto,auto,auto,24px 24px;color:var(--ink);font:400 1rem/1.55 "Bricolage Grotesque",system-ui,sans-serif}
+main{max-width:860px;margin:0 auto;padding:0 1rem 3rem}
+h1,h2,h3{line-height:1.1;margin:0}
+h2{font-size:clamp(1.6rem,5vw,2.2rem);font-weight:800;margin:2.8rem 0 .4rem;display:inline-block;background:linear-gradient(transparent 62%,rgba(230,36,107,.38) 62%);padding:0 .2em}
+.sub{color:var(--mut);margin:0 0 1.2rem}
+.flags{height:44px;background:
+ linear-gradient(135deg,var(--pk) 50%,transparent 50%) 0 0/44px 44px,
+ linear-gradient(225deg,var(--yl) 50%,transparent 50%) 22px 0/44px 44px;
+ -webkit-mask:linear-gradient(#000,#000);opacity:.95}
+.hero{--h:clamp(260px,58vw,460px);position:relative;overflow:hidden;text-align:center;color:#fff;background:linear-gradient(160deg,#2a1f7a,#b4146a 65%,#ff6b4a);clip-path:ellipse(130% 100% at 50% 0);padding:0 0 4.4rem}
+.hero-img{display:block;width:100%;height:var(--h);object-fit:cover;object-position:center top;-webkit-mask-image:linear-gradient(#000 45%,transparent);mask-image:linear-gradient(#000 45%,transparent)}
+.hero .flags{position:absolute;top:0;left:0;right:0}
+.hero-in{position:relative;padding:1.6rem 1rem 0}
+.hero h1{font-size:clamp(2.8rem,13vw,5.6rem);font-weight:800;letter-spacing:-.03em;text-shadow:0 3px 18px rgba(20,18,58,.6)}
+.hero h1 span{display:inline-block;background:var(--yl);color:#1d1b4f;text-shadow:none;padding:0 .18em;border-radius:.12em;transform:rotate(-2deg)}
+.tag{max-width:30rem;margin:.8rem auto 1.2rem;color:rgba(255,255,255,.95);text-shadow:0 1px 8px rgba(20,18,58,.7)}
+.c{text-align:center}
+.count{display:inline-block;background:var(--yl);color:#1d1b4f;font:inherit;font-weight:600;cursor:pointer;padding:.6rem 1.1rem;border-radius:99px;border:2px solid var(--ink)}
+.cal{max-width:320px;margin:0 auto;background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:.7rem .8rem;box-shadow:4px 4px 0 var(--ink)}
+.calh{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
+.calh b{font-size:1.05rem;font-weight:800}
+.calh button{font:inherit;font-weight:800;width:2rem;height:2rem;border-radius:50%;border:2px solid var(--ink);background:var(--bg);color:var(--ink);cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.dow{font-size:.78rem;color:var(--mut);font-weight:600}
+.day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;font:inherit;font-size:.85rem;border:2px solid transparent;background:none;color:var(--ink);padding:0}
+.day.today{border-color:var(--mut)}
+.day.ev{cursor:pointer;font-weight:800;background:var(--pk);color:#fff}
+.day.ev.tent{background:transparent;color:var(--ink);border:2px dashed var(--yl);box-shadow:inset 0 0 0 2px var(--yl)}
+.count:focus-visible,.day:focus-visible,.btn:focus-visible,.calh button:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+.legend{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;font-size:.78rem;color:var(--mut);margin-top:.7rem}
+.legend i{display:inline-block;width:.9rem;height:.9rem;border-radius:50%;vertical-align:-.1rem;margin-right:.3rem;background:var(--pk)}
+.legend i.t{background:none;border:2px dashed var(--yl)}
+#pick{margin-top:.7rem;display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+.chip{font:inherit;font-weight:600;border:2px solid var(--ink);background:var(--yl);color:#1d1b4f;border-radius:99px;padding:.3rem .9rem;cursor:pointer}
+.yr{font-size:1.1rem;font-weight:800;color:var(--pk);margin:1.6rem 0 .6rem}
+.ev-card{background:var(--card);border:2px solid var(--ink);border-left:12px solid var(--mint);border-radius:14px;padding:1rem 1.1rem;margin-bottom:1.3rem;display:grid;gap:.8rem;scroll-margin-top:1rem;box-shadow:5px 5px 0 var(--ink)}
+.ev-card.tent{border-left-color:var(--yl)}
+.ev-card.flash{animation:fl 1.6s}
+@keyframes fl{0%,60%{box-shadow:0 0 0 6px var(--pk)}100%{box-shadow:0 0 0 0 transparent}}
+.ev-card h3{font-size:1.45rem;font-weight:800}
+.badge{display:inline-block;font-size:.8rem;font-weight:600;border-radius:99px;padding:.1rem .7rem;background:var(--mint);color:#06281d;margin-bottom:.4rem}
+.tent .badge{background:var(--yl);color:#1d1b4f}
+.meta{margin:.2rem 0 0;color:var(--mut)}
+.poster{border:2px dashed var(--ln);border-radius:12px;padding:1rem;text-align:center;color:var(--mut);font-size:.9rem}
+.poster img{max-width:100%;max-height:85vh;border-radius:8px;display:block;margin:0 auto}
+.btn{display:inline-block;font:inherit;font-weight:600;text-decoration:none;color:#fff;background:var(--pk);border:2px solid var(--ink);border-radius:10px;padding:.4rem .9rem}
+.build{border:2px solid var(--ink);border-radius:14px;overflow:hidden;background:var(--card)}
+.stripe{height:26px;background:repeating-linear-gradient(-45deg,var(--yl) 0 16px,#1d1b4f 16px 32px)}
+.build div.in{padding:1.4rem 1rem;text-align:center}
+.build h3{font-size:1.5rem;font-weight:800}
+.build .em{font-size:2.6rem;display:inline-block;animation:wob 2.4s ease-in-out infinite}
+@keyframes wob{50%{transform:rotate(-10deg)}}
+.soon{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.soon div{background:var(--card);border:2px dashed var(--ln);border-radius:14px;padding:1rem}
+.soon b{display:block;font-size:1.05rem}
+.soon p{margin:.3rem 0 0;color:var(--mut);font-size:.92rem}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;gap:.5rem;overflow-x:auto;padding:.7rem max(1rem,calc((100% - 860px)/2));background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:2px solid var(--ink);scrollbar-width:none}
+.tabs button{flex:none;font:inherit;font-weight:600;border:2px solid var(--ink);background:var(--card);color:var(--ink);border-radius:99px;padding:.45rem 1rem;cursor:pointer}
+.tabs button.on{background:var(--pk);color:#fff;box-shadow:3px 3px 0 var(--ink)}
+.tabs button:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+.panel[hidden]{display:none}
+.stk{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.stk figure{margin:0;background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:.7rem;text-align:center;box-shadow:4px 4px 0 var(--ink)}
+.stk img{width:100%;aspect-ratio:1;object-fit:contain}
+.stk figcaption{font-weight:600;margin:.3rem 0 .5rem}
+.empty{grid-column:1/-1;border:2px dashed var(--ln);border-radius:14px;padding:1.6rem 1rem;text-align:center;color:var(--mut);background:var(--card)}
+.how{margin-top:1.2rem;border-radius:14px;background:var(--card);border:2px solid var(--ink);padding:.9rem 1rem}
+.how p{margin:.3rem 0 0;color:var(--mut)}
+.top{text-align:center;padding:1.2rem 1rem 1.2rem}
+.banner{display:block;width:100%;max-width:780px;height:auto;margin:0 auto 1.1rem;border:2px solid var(--ink);border-radius:20px;box-shadow:5px 5px 0 var(--ink)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.pills{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap}
+.count.b{background:var(--mint);color:#06281d}
+.av{width:1.9rem;height:1.9rem;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:.4rem;border:2px solid #06281d}
+.av+.av{margin-left:-.9rem}
+.day.bd{padding:0;border:2px solid var(--pk);border-radius:50%;overflow:hidden;position:relative;cursor:pointer;background:none}
+.day.bd img{width:100%;height:100%;object-fit:cover;display:block}
+.day.bd .n{position:absolute;right:0;bottom:0;background:var(--yl);color:#1d1b4f;font-size:.65rem;font-weight:800;border-radius:99px;padding:0 .3rem}
+#bpick{margin-top:.7rem;display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;align-items:center}
+.bi{display:flex;align-items:center;gap:.8rem;background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:.6rem .8rem;margin-bottom:.7rem;box-shadow:3px 3px 0 var(--ink);scroll-margin-top:5rem}
+.bi.first{border-left:10px solid var(--mint)}
+.bi.flash{animation:fl 1.6s}
+.bi img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--ink);flex:none}
+.bi .mut{color:var(--mut);font-size:.9rem}
+.bi .w{margin-left:auto;font-weight:600;background:var(--yl);color:#1d1b4f;border-radius:99px;padding:.15rem .75rem;font-size:.85rem;white-space:nowrap}
+.stk{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:.55rem}
+.st{aspect-ratio:1;padding:.25rem;background:var(--card);border:2px solid var(--ink);border-radius:14px;box-shadow:3px 3px 0 var(--ink);cursor:pointer}
+.st img{width:100%;height:100%;object-fit:contain;display:block}
+.st:focus-visible,.sv button:focus-visible,.sv a:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+.sv{position:fixed;inset:0;z-index:50;background:rgba(20,18,58,.88);display:flex;align-items:center;justify-content:center;gap:.5rem;padding:max(1rem,env(safe-area-inset-top)) .6rem max(1rem,env(safe-area-inset-bottom))}
+.sv[hidden]{display:none}
+.sv-c{display:flex;flex-direction:column;align-items:center;gap:1rem;width:min(78vw,500px)}
+.sv-c img{width:100%;max-height:68vh;object-fit:contain;background:var(--card);border:2px solid var(--ink);border-radius:20px;padding:.6rem}
+.sv-n,.sv-x{font:inherit;font-weight:800;font-size:1.4rem;width:2.6rem;height:2.6rem;border-radius:50%;border:2px solid var(--ink);background:var(--yl);color:#1d1b4f;cursor:pointer;flex:none}
+.sv-x{position:absolute;top:max(.8rem,env(safe-area-inset-top));right:.8rem}
+footer{text-align:center;color:var(--mut);padding:1rem}
+@media (prefers-reduced-motion:reduce){.build .em,.ev-card.flash{animation:none}html{scroll-behavior:auto}}
+
+/* Acceso y administración Paquillo Events */
+body.auth-locked{overflow:hidden}
+#loginGate{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:1rem;background:linear-gradient(145deg,#17143c,#30265e 60%,#51418a);color:#fff}
+#loginGate[hidden],#adminPanel[hidden],#birthdayGate[hidden]{display:none!important}
+.login-card{width:min(100%,420px);background:#fff;color:#24213f;border-radius:24px;padding:2rem;box-shadow:0 20px 70px #0006;text-align:center}
+.login-card img{width:min(100%,280px);max-height:110px;object-fit:contain;margin-bottom:1rem}
+.login-card h2{margin:.3rem 0 .5rem;font-size:1.65rem}.login-card p{color:#68657b}
+.login-card label{display:block;text-align:left;font-weight:800;margin:.9rem 0 .35rem}
+.login-card input{box-sizing:border-box;width:100%;padding:.85rem 1rem;border:2px solid #dedbea;border-radius:12px;font:inherit;color:#24213f}
+.login-card button,.admin-logout{border:0;border-radius:12px;padding:.85rem 1.2rem;font:inherit;font-weight:900;background:#f5d64c;color:#211d45;cursor:pointer}
+.login-card button{width:100%;margin-top:1.2rem}.login-error{color:#b42318!important;min-height:1.3em;font-weight:800}
+#adminPanel{max-width:1050px;margin:1rem auto;padding:1rem;background:var(--card);border:2px solid var(--ink);border-radius:18px}
+#adminPanel h2{margin-top:.2rem}.admin-top{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.admin-table{width:100%;border-collapse:collapse;margin-top:1rem}.admin-table th,.admin-table td{padding:.65rem;text-align:left;border-bottom:1px solid var(--line,#ddd);font-size:.95rem}
+.admin-table th{font-weight:900}.admin-note{font-size:.88rem;color:var(--mut);line-height:1.45}
+#birthdayGate{position:fixed;inset:0;z-index:9998;background:#16132dcc;display:grid;place-items:center;padding:1rem}
+.birthday-card{width:min(100%,480px);max-height:90vh;overflow:auto;background:#fff;color:#24213f;border-radius:24px;padding:1.5rem;text-align:center;box-shadow:0 20px 70px #0007}
+.birthday-card h2{margin:.2rem 0 .7rem}.birthday-person{display:flex;align-items:center;gap:.8rem;text-align:left;margin:.7rem 0;padding:.55rem;background:#f5f3fb;border-radius:14px}
+.birthday-person img{width:64px;height:64px;object-fit:cover;border-radius:50%}.birthday-person b{font-size:1.05rem}
+.birthday-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem;margin-top:1rem}.birthday-actions button{border:0;border-radius:12px;padding:.75rem 1rem;font:inherit;font-weight:800;cursor:pointer;background:#f5d64c;color:#211d45}.birthday-actions .secondary{background:#eeeaf7}
+@media(max-width:520px){.login-card{padding:1.35rem}.admin-table th,.admin-table td{font-size:.82rem;padding:.45rem}}
+
+</style>
+</head>
+<body>
+<header class="top">
+<h1 class="sr">Paquillo Events</h1>
+<img class="banner" src="banner-paquillo-events-2.jpg" alt="Paquillo Events. Donde los planes se proponen, votan, vuelven a votar, discuten y a veces incluso ocurren.">
+<div class="pills">
+<button type="button" class="count" id="count">Contando los días…</button>
+<button type="button" class="count b" id="bcount"></button>
+</div>
+</header>
+<nav class="tabs" id="tabs" role="tablist" aria-label="Secciones">
+<button type="button" role="tab" data-t="proximos" class="on">📅 Próximos planes</button>
+<button type="button" role="tab" data-t="cumples">🎂 Cumples</button>
+<button type="button" role="tab" data-t="pasados">📸 Planes pasados</button>
+<button type="button" role="tab" data-t="stickers">😂 Stickers</button>
+<button type="button" role="tab" data-t="horno">🔥 En el horno</button>
+</nav>
+<main>
+<section class="panel" id="p-proximos">
+<div class="c"><h2>Calendario</h2>
+<p class="sub">Toca un día marcado y te llevo al plan.</p></div>
+<div class="cal">
+<div class="calh"><button id="prev" aria-label="Mes anterior">‹</button><b id="mname"></b><button id="next" aria-label="Mes siguiente">›</button></div>
+<div class="grid" id="cg"></div>
+<div class="legend"><span><i></i>Confirmado</span><span><i class="t"></i>Por confirmar</span></div>
+<div id="pick"></div>
+</div>
+
+<h2>Próximos planes</h2>
+<p class="sub">Apunta las fechas y avisa si no vas a poder.</p>
+<div id="events"></div>
+
+</section>
+<section class="panel" id="p-cumples" hidden>
+<div class="c"><h2>Cumpleaños</h2>
+<p class="sub">Toca un día con foto y te llevo a su cumple.</p></div>
+<div class="cal">
+<div class="calh"><button id="bprev" aria-label="Mes anterior">‹</button><b id="bmname"></b><button id="bnext" aria-label="Mes siguiente">›</button></div>
+<div class="grid" id="bcg"></div>
+<div id="bpick"></div>
+</div>
+<h2>Próximos cumples</h2>
+<p class="sub">Ordenados desde el que toca ahora.</p>
+<div id="blist"></div>
+</section>
+<section class="panel" id="p-pasados" hidden>
+<h2>Planes pasados</h2>
+<div class="build">
+<div class="stripe"></div>
+<div class="in">
+<span class="em" aria-hidden="true">🚧</span>
+<h3>En construcción</h3>
+<p class="sub" style="margin:.4rem 0 0">Estamos desenterrando fotos del archivo. Si sales mal en alguna, es pura casualidad.</p>
+</div>
+<div class="stripe"></div>
+</div>
+
+</section>
+<section class="panel" id="p-stickers" hidden>
+<h2>Stickers del grupo</h2>
+<p class="sub">El archivo oficial de caras, gestos y desastres del grupo. Toca uno para verlo y descargarlo.</p>
+<p><a class="btn" id="dall" href="stickers.zip" download hidden>Descargar todos (zip)</a></p>
+<div class="stk" id="stk"></div>
+<div class="how"><b>Cómo llevarlos a WhatsApp</b><p>Descarga los que quieras y añádelos a un pack con una app de stickers, como Sticker Maker. Casi todos son WebP de 512 × 512 px, el formato que pide WhatsApp.</p></div>
+</section>
+<section class="panel" id="p-horno" hidden>
+<h2>En el horno</h2>
+<p class="sub">Secciones que llegarán cuando alguien tenga un rato libre.</p>
+<div class="soon">
+<div><b>🗳️ Votaciones</b><p>Fechas y asistencia, para dejar de decir «ya veremos» en el grupo.</p></div>
+<div><b>⏰ Ranking de impuntuales</b><p>Datos objetivos. Reclamaciones, por escrito.</p></div>
+<div><b>🏆 Salón de la fama</b><p>Las mejores anécdotas, citas y desastres de cada plan.</p></div>
+</div>
+</section>
+</main>
+<footer>Paquillo Events · hecho con cariño y muy poca vergüenza</footer>
+
+<div class="sv" id="sv" hidden>
+<button type="button" class="sv-x" id="svx" aria-label="Cerrar">✕</button>
+<button type="button" class="sv-n" id="svp" aria-label="Anterior">‹</button>
+<div class="sv-c"><img id="svi" alt="Sticker"><a class="btn" id="svd" download>Descargar</a></div>
+<button type="button" class="sv-n" id="svn" aria-label="Siguiente">›</button>
+</div>
+
+
+<div id="loginGate" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+ <form class="login-card" id="loginForm">
+  <img src="banner-paquillo-events-2.jpg" alt="Paquillo Events" onerror="this.style.display='none'">
+  <h2 id="loginTitle">🔐 Acceso a Paquillo Events</h2>
+  <p>Identifícate para entrar en los planes del grupo.</p>
+  <label for="loginUser">Usuario</label><input id="loginUser" name="username" autocomplete="username" required list="memberNames" placeholder="Tu nombre tal como aparece en Cumples">
+  <datalist id="memberNames"></datalist>
+  <label for="loginPass">Contraseña</label><input id="loginPass" name="password" type="password" autocomplete="current-password" required placeholder="Tu contraseña">
+  <p id="loginError" class="login-error" aria-live="polite"></p>
+  <button type="submit">Entrar 🎉</button>
+ </form>
+</div>
+<div id="birthdayGate" hidden role="dialog" aria-modal="true" aria-labelledby="birthdayTitle">
+ <div class="birthday-card"><h2 id="birthdayTitle">🎂 ¡Hoy hay cumpleaños!</h2><p id="birthdayIntro"></p><div id="birthdayPeople"></div>
+  <div class="birthday-actions"><button id="birthdayClose">¡A felicitar! 🥳</button><button id="birthdayToday" class="secondary">No volver a mostrar hoy</button></div>
+ </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const EV=[
+{id:'cumple-sandra',e:'🎂',t:'Cumple Sandra',y:2026,by:'Sandra',d:['2026-11-06'],ok:true,when:'Viernes 6 de noviembre',where:'Casa de Richi y Sandra',map:'https://maps.app.goo.gl/iFYDGZ7Az5N1bc586',desc:'Sandra se hace vieja y nos arrastra en el intento.',poster:'cartel-cumple-sandra-2026.jpg'},
+{id:'san-miguel',e:'🍺',t:'Visita a la San Miguel',y:2026,by:'David y Richi',d:['2026-12-14'],ok:true,when:'14 de diciembre, a las 16:00',where:'San Miguel',map:'https://maps.app.goo.gl/CFwwpB7dvevBk9mE6',desc:'Un nuevo plan para beber un lunes.',poster:'cartel-san-miguel-2026.jpg'},
+{id:'pachanga',e:'🏀',t:'PaquiPachanga baloncesto, I edición',y:2026,by:'Iván y Sofía',d:['2026-12-19'],ok:true,when:'19 de diciembre (hora por confirmar)',where:'Talamillo',map:'https://maps.app.goo.gl/bieEhCVe8vLLVcLY8',desc:'Un puñado de gente que no sabe botar, ni driblar, ni cuántos pasos se pueden dar con el balón, a punto de jugar un partido de verdad. Se admiten dobles, pasos, canastas en propia y tiros que no tocan ni el aro. Las agujetas del día siguiente van de regalo.',poster:'cartel-pachanga-2026.jpg'},
+{id:'cena-navidad',e:'🎄',t:'Cena de Navidad 2026',y:2026,by:'Paquillo’s events in progress',d:['2026-12-19'],ok:true,when:'19 de diciembre, de 20:00 a 2:00',where:'Bibeme',map:'https://maps.app.goo.gl/QVhvjR26Cckd7DD37',desc:'Un nuevo evento navideño para los Paquillos, con catas y nuevas actividades.',poster:'cartel-cena-navidad-2026.jpg'},
+{id:'sidreria',e:'🍏',t:'Sidrería 2027',y:2027,by:'Por determinar',d:[],ok:false,when:'Fecha por determinar',where:'Sitio por determinar',map:'',desc:'Una sidrería nueva que visitar para generar anécdotas nuevas y seguir llenando el calendario. Fecha y sitio, muy pronto.'},
+{id:'boda-ivan-sofia',e:'💍',t:'Boda Iván y Sofía',y:2027,by:'Iván y Sofía',d:['2027-07-03'],ok:true,when:'3 de julio de 2027',where:'Finca de Santa Rosalía',map:'https://maps.app.goo.gl/mreWd9JsBB69mkyQ7',desc:'Dos miembros más de Paquillo sellan su amor y se pasan al lado oscuro.',poster:'cartel-boda-ivan-sofia-2027.jpg'}
+];
+const STK=[{t:'t-0a52a98a.webp',f:'0a52a98a.webp'},{t:'t-39947c71.webp',f:'39947c71.webp'},{t:'t-cb9ace0c.webp',f:'cb9ace0c.webp'},{t:'t-a7b0af9b.webp',f:'a7b0af9b.webp'},{t:'t-a288afef.webp',f:'a288afef.webp'},{t:'t-62846d09.webp',f:'62846d09.webp'},{t:'t-994b5e50.webp',f:'994b5e50.webp'},{t:'t-ceaa4a0d.webp',f:'ceaa4a0d.webp'},{t:'t-a42a37e5.webp',f:'a42a37e5.webp'},{t:'t-64821a99.webp',f:'64821a99.webp'},{t:'t-0b19f314.webp',f:'0b19f314.webp'},{t:'t-8689f568.webp',f:'8689f568.webp'},{t:'t-d55499cd.webp',f:'d55499cd.webp'},{t:'t-11a56d28.webp',f:'11a56d28.webp'},{t:'t-59a9c9fe.webp',f:'59a9c9fe.webp'},{t:'t-f5b75d0f.webp',f:'f5b75d0f.webp'},{t:'t-4d0487a3.webp',f:'4d0487a3.webp'},{t:'t-3c1cfdd6.webp',f:'3c1cfdd6.webp'},{t:'t-48a873ef.webp',f:'48a873ef.webp'},{t:'t-22a72af2.webp',f:'22a72af2.webp'},{t:'t-de22e9fc.webp',f:'de22e9fc.webp'},{t:'t-063f0ded.webp',f:'063f0ded.webp'},{t:'t-bfd0c2e9.webp',f:'bfd0c2e9.webp'},{t:'t-ef227170.webp',f:'ef227170.webp'},{t:'t-2d7c2475.webp',f:'2d7c2475.webp'},{t:'t-9d1ac7c5.webp',f:'9d1ac7c5.webp'},{t:'t-52df9dd4.webp',f:'52df9dd4.webp'},{t:'t-a01cec26.webp',f:'a01cec26.webp'},{t:'t-e8db23d6.webp',f:'e8db23d6.webp'},{t:'t-76a26b9d.webp',f:'76a26b9d.webp'},{t:'t-c6d27626.webp',f:'c6d27626.webp'},{t:'t-8dfb2e2a.webp',f:'8dfb2e2a.webp'},{t:'t-342e3179.webp',f:'342e3179.webp'},{t:'t-ab3339d9.webp',f:'ab3339d9.webp'},{t:'t-dc2d5e6e.webp',f:'dc2d5e6e.webp'},{t:'t-da4f1d3e.webp',f:'da4f1d3e.webp'},{t:'t-3dd86c0d.webp',f:'3dd86c0d.webp'},{t:'t-41f75960.webp',f:'41f75960.webp'},{t:'t-4607a583.webp',f:'4607a583.webp'},{t:'t-24dc0c0f.webp',f:'24dc0c0f.webp'},{t:'t-4f168d62.webp',f:'4f168d62.webp'},{t:'t-562f0595.webp',f:'562f0595.webp'},{t:'t-6209722f.webp',f:'6209722f.webp'},{t:'t-649dcc4f.webp',f:'649dcc4f.webp'},{t:'t-f8c0fa1e.webp',f:'f8c0fa1e.webp'},{t:'t-d67cdda2.webp',f:'d67cdda2.webp'},{t:'t-9ad467a7.webp',f:'9ad467a7.webp'},{t:'t-25f427b8.webp',f:'25f427b8.webp'},{t:'t-51debbaf.webp',f:'51debbaf.webp'},{t:'t-7484877b.webp',f:'7484877b.webp'},{t:'t-278adf28.webp',f:'278adf28.webp'},{t:'t-4e6e130d.webp',f:'4e6e130d.webp'},{t:'t-603cef43.webp',f:'603cef43.webp'},{t:'t-7b3082d1.webp',f:'7b3082d1.webp'},{t:'t-2a6e0805.webp',f:'2a6e0805.webp'},{t:'t-a57d6025.webp',f:'a57d6025.webp'},{t:'t-7aea45c5.webp',f:'7aea45c5.webp'},{t:'t-1223f6f3.webp',f:'1223f6f3.webp'},{t:'t-6cca4936.webp',f:'6cca4936.webp'},{t:'t-fa3957ed.webp',f:'fa3957ed.webp'},{t:'t-7c5ce8f3.webp',f:'7c5ce8f3.webp'},{t:'t-1758f672.webp',f:'1758f672.webp'},{t:'t-bdc0e71c.webp',f:'bdc0e71c.webp'},{t:'t-705719c5.webp',f:'705719c5.webp'},{t:'t-53db28f0.webp',f:'53db28f0.webp'},{t:'t-5c4e7f0d.webp',f:'5c4e7f0d.webp'},{t:'t-2f1ee012.webp',f:'2f1ee012.webp'},{t:'t-88e360b6.webp',f:'88e360b6.webp'},{t:'t-a90c39f4.webp',f:'a90c39f4.webp'},{t:'t-c2bcafac.webp',f:'c2bcafac.webp'},{t:'t-acdbe162.webp',f:'acdbe162.webp'},{t:'t-2a10443b.webp',f:'2a10443b.webp'},{t:'t-8ea3220b.webp',f:'8ea3220b.webp'},{t:'t-4c38833c.webp',f:'4c38833c.webp'},{t:'t-ea764f3d.webp',f:'ea764f3d.webp'},{t:'t-919f6a44.webp',f:'919f6a44.webp'},{t:'t-fae97be8.webp',f:'fae97be8.webp'},{t:'t-1f5e3f67.webp',f:'1f5e3f67.webp'},{t:'t-dc914b58.webp',f:'dc914b58.webp'},{t:'t-6467e888.webp',f:'6467e888.webp'},{t:'t-74f8d3e8.webp',f:'74f8d3e8.webp'},{t:'t-73ad0863.webp',f:'73ad0863.webp'},{t:'t-c3bbd11b.webp',f:'c3bbd11b.webp'},{t:'t-0b6028b1.webp',f:'0b6028b1.webp'},{t:'t-f98bfe78.webp',f:'f98bfe78.webp'},{t:'t-36c6351a.webp',f:'36c6351a.webp'},{t:'t-10e8bb36.webp',f:'10e8bb36.webp'},{t:'t-7e122e1d.webp',f:'7e122e1d.webp'},{t:'t-79cca47d.webp',f:'79cca47d.webp'},{t:'t-a66ba4c9.webp',f:'a66ba4c9.webp'},{t:'t-0ead9913.webp',f:'0ead9913.webp'},{t:'t-609bf7a4.webp',f:'609bf7a4.webp'},{t:'t-84544fb3.webp',f:'84544fb3.webp'},{t:'t-f7be7309.webp',f:'f7be7309.webp'},{t:'t-f6f69c15.webp',f:'f6f69c15.webp'},{t:'t-8b6d8900.webp',f:'8b6d8900.webp'},{t:'t-e666d9cf.webp',f:'e666d9cf.webp'},{t:'t-be600767.webp',f:'be600767.webp'},{t:'t-e8bdfb99.webp',f:'e8bdfb99.webp'},{t:'t-0ec7250f.webp',f:'0ec7250f.webp'},{t:'t-aa6891bc.webp',f:'aa6891bc.webp'},{t:'t-26bbbd3a.webp',f:'26bbbd3a.webp'},{t:'t-03c93dab.webp',f:'03c93dab.webp'},{t:'t-0ab8e657.webp',f:'0ab8e657.webp'}];
+const MES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const p2=n=>String(n).padStart(2,'0'), $=id=>document.getElementById(id);
+const byDay={};EV.forEach(e=>e.d.forEach(k=>(byDay[k]=byDay[k]||[]).push(e)));
+const today=new Date();today.setHours(0,0,0,0);
+const nxt=EV.filter(e=>e.d.length).map(e=>({e,t:new Date(e.d[0]+'T00:00')})).filter(x=>x.t>=today).sort((a,b)=>a.t-b.t)[0];
+let cur=nxt?new Date(nxt.t.getFullYear(),nxt.t.getMonth(),1):new Date(today.getFullYear(),today.getMonth(),1);
+
+if(nxt){const n=Math.round((nxt.t-today)/864e5);
+ $('count').textContent=n===0?'¡Hoy es '+nxt.e.t+'!':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para '+nxt.e.t+(nxt.e.ok?'':' (fecha por confirmar)');
+$('count').onclick=()=>go(nxt.e.id);
+}else{$('count').textContent='Sin planes a la vista. Alguien tendrá que proponer algo.';$('count').disabled=true;$('count').style.cursor='default'}
+
+function go(id){showTab('proximos');const el=$(id);el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}
+
+function cal(){
+ const y=cur.getFullYear(),m=cur.getMonth();
+ $('mname').textContent=MES[m]+' '+y;
+ let h=['L','M','X','J','V','S','D'].map(d=>'<div class="dow">'+d+'</div>').join('');
+ const off=(new Date(y,m,1).getDay()+6)%7, n=new Date(y,m+1,0).getDate();
+ for(let i=0;i<off;i++)h+='<div></div>';
+ for(let d=1;d<=n;d++){
+  const k=y+'-'+p2(m+1)+'-'+p2(d), ev=byDay[k];
+  const isT=new Date(y,m,d).getTime()===today.getTime();
+  if(ev){const tent=ev.every(e=>!e.ok);
+   h+='<button class="day ev'+(tent?' tent':'')+(isT?' today':'')+'" data-k="'+k+'" aria-label="'+d+' de '+MES[m]+': '+ev.map(e=>e.t).join(', ')+'">'+d+'</button>';
+  }else h+='<div class="day'+(isT?' today':'')+'">'+d+'</div>';
+ }
+ $('cg').innerHTML=h;$('pick').innerHTML='';
+}
+$('cg').addEventListener('click',x=>{const b=x.target.closest('[data-k]');if(!b)return;
+ const ev=byDay[b.dataset.k];
+ if(ev.length===1){$('pick').innerHTML='';go(ev[0].id)}
+ else{$('pick').innerHTML='<span class="sub" style="margin:0">Ese día hay plan doble:</span>'+ev.map(e=>'<button class="chip" data-g="'+e.id+'">'+e.e+' '+e.t+'</button>').join('')}
+});
+$('pick').addEventListener('click',x=>{const b=x.target.closest('[data-g]');if(b)go(b.dataset.g)});
+$('prev').onclick=()=>{cur=new Date(cur.getFullYear(),cur.getMonth()-1,1);cal()};
+$('next').onclick=()=>{cur=new Date(cur.getFullYear(),cur.getMonth()+1,1);cal()};
+
+let out='',yr=0;
+EV.forEach(e=>{
+ if(e.y!==yr){yr=e.y;out+='<div class="yr">'+yr+'</div>'}
+ out+='<article class="ev-card'+(e.ok?'':' tent')+'" id="'+e.id+'"><div><span class="badge">'+(e.ok?'Confirmado':'Por confirmar')+'</span><h3>'+e.e+' '+e.t+'</h3>'
+ +'<p class="meta"><b>Cuándo:</b> '+e.when+'<br><b>Dónde:</b> '+e.where+'<br><b>Organiza:</b> '+e.by+'</p></div>'
+ +'<p style="margin:0">'+e.desc+'</p>'
+ +'<div class="poster">'+(e.poster?'<img src="'+e.poster+'" alt="Cartel de '+e.t+'">':'El cartel está en la imprenta.')+'</div>'
+ +(e.map?'<div><a class="btn" href="'+e.map+'" target="_blank" rel="noopener">Cómo llegar</a></div>':'')+'</article>';
+});
+$('events').innerHTML=out;cal();
+$('stk').innerHTML=STK.length?STK.map((s,i)=>'<button type="button" class="st" data-i="'+i+'" aria-label="Ver sticker '+(i+1)+'"><img src="'+s.t+'" alt="Sticker" loading="lazy"></button>').join(''):'<div class="empty">🫥 Aún no hay stickers. Mándame los primeros y aparecerán aquí.</div>';
+let si=0;
+function showSt(i){si=(i+STK.length)%STK.length;const s=STK[si],f=s.f||s.t;$('svi').src=f;$('svd').href=f;$('svd').download='paquillo-sticker-'+String(si+1).padStart(3,'0')+'.webp';$('sv').hidden=false}
+$('stk').addEventListener('click',x=>{const b=x.target.closest('[data-i]');if(b)showSt(+b.dataset.i)});
+$('svx').onclick=()=>{$('sv').hidden=true};
+$('sv').addEventListener('click',x=>{if(x.target===$('sv'))$('sv').hidden=true});
+$('svp').onclick=()=>showSt(si-1);$('svn').onclick=()=>showSt(si+1);
+addEventListener('keydown',x=>{if($('sv').hidden)return;if(x.key==='Escape')$('sv').hidden=true;if(x.key==='ArrowLeft')showSt(si-1);if(x.key==='ArrowRight')showSt(si+1)});
+function showTab(t){if(!$('p-'+t))t='proximos';document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!=='p-'+t);document.querySelectorAll('.tabs button').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('on',on);b.setAttribute('aria-selected',on)})}
+$('tabs').addEventListener('click',x=>{const b=x.target.closest('[data-t]');if(!b)return;location.hash=b.dataset.t;showTab(b.dataset.t);const y=document.querySelector('.top').offsetHeight;if(window.scrollY>y)window.scrollTo({top:y})});
+addEventListener('hashchange',()=>showTab(location.hash.slice(1)));
+const PEOPLE=[{n:'Leti',d:14,m:1,s:'leti',i:'cumples-leti.jpg'},{n:'Adri',d:22,m:7,s:'adri',i:'cumples-adri.jpg'},{n:'Alba',d:3,m:3,s:'alba',i:'cumples-alba.jpg'},{n:'Carla',d:30,m:4,s:'carla',i:'cumples-carla.jpg'},{n:'David',d:6,m:3,s:'david',i:'cumples-david.jpg'},{n:'Diego',d:22,m:4,s:'diego',i:'cumples-diego.jpg'},{n:'Ines',d:1,m:10,s:'ines',i:'cumples-ines.jpg'},{n:'Iván',d:28,m:9,s:'ivan',i:'cumples-ivan.jpg'},{n:'Joaquín',d:14,m:7,s:'joaquin',i:'cumples-joaquin.jpg'},{n:'JB',d:8,m:10,s:'jb',i:'cumples-jb.jpg'},{n:'Jorge R',d:24,m:9,s:'jorge-r',i:'cumples-jorge-r.jpg'},{n:'Julia',d:15,m:6,s:'julia',i:'cumples-julia.jpg'},{n:'Laura',d:20,m:5,s:'laura',i:'cumples-laura.jpg'},{n:'María',d:14,m:1,s:'maria',i:'cumples-maria.jpg'},{n:'Mireia',d:5,m:2,s:'mireia',i:'cumples-mireia.jpg'},{n:'Richy',d:26,m:2,s:'richy',i:'cumples-richy.jpg'},{n:'Román',d:1,m:12,s:'roman',i:'cumples-roman.jpg'},{n:'Rodri',d:27,m:4,s:'rodri',i:'cumples-rodri.jpg'},{n:'Sara',d:22,m:6,s:'sara',i:'cumples-sara.jpg'},{n:'Santi',d:16,m:2,s:'santi',i:'cumples-santi.jpg'},{n:'Sandra',d:2,m:11,s:'sandra',i:'cumples-sandra.jpg'},{n:'Sofía',d:16,m:1,s:'sofia',i:'cumples-sofia.jpg'},{n:'Javi',d:21,m:4,s:'javi',i:'cumples-javi.jpg'}];
+const bday={};PEOPLE.forEach(p=>{const k=p.m+'-'+p.d;(bday[k]=bday[k]||[]).push(p)});
+const BD=PEOPLE.map(p=>{let t=new Date(today.getFullYear(),p.m-1,p.d);if(t<today)t=new Date(today.getFullYear()+1,p.m-1,p.d);return{p,t}}).sort((a,b)=>a.t-b.t||PEOPLE.indexOf(a.p)-PEOPLE.indexOf(b.p));
+let bcur=new Date(BD[0].t.getFullYear(),BD[0].t.getMonth(),1);
+function goB(s){showTab('cumples');const el=$('b-'+s);el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}
+function bcal(){
+ const y=bcur.getFullYear(),m=bcur.getMonth();
+ $('bmname').textContent=MES[m]+' '+y;
+ let h=['L','M','X','J','V','S','D'].map(d=>'<div class="dow">'+d+'</div>').join('');
+ const off=(new Date(y,m,1).getDay()+6)%7,n=new Date(y,m+1,0).getDate();
+ for(let i=0;i<off;i++)h+='<div></div>';
+ for(let d=1;d<=n;d++){
+  const ps=bday[(m+1)+'-'+d],isT=new Date(y,m,d).getTime()===today.getTime();
+  if(ps)h+='<button class="day bd'+(isT?' today':'')+'" data-b="'+(m+1)+'-'+d+'" aria-label="'+d+' de '+MES[m]+': '+ps.map(p=>p.n).join(', ')+'"><img src="'+ps[0].i+'" alt="">'+(ps.length>1?'<span class="n">'+ps.length+'</span>':'')+'</button>';
+  else h+='<div class="day'+(isT?' today':'')+'">'+d+'</div>';
+ }
+ $('bcg').innerHTML=h;$('bpick').innerHTML='';
+}
+$('bcg').addEventListener('click',x=>{const b=x.target.closest('[data-b]');if(!b)return;const ps=bday[b.dataset.b];
+ if(ps.length===1){$('bpick').innerHTML='';goB(ps[0].s)}
+ else $('bpick').innerHTML='<span class="sub" style="margin:0">Ese día cumplen:</span>'+ps.map(p=>'<button class="chip" data-g="'+p.s+'">'+p.n+'</button>').join('')});
+$('bpick').addEventListener('click',x=>{const b=x.target.closest('[data-g]');if(b)goB(b.dataset.g)});
+$('bprev').onclick=()=>{bcur=new Date(bcur.getFullYear(),bcur.getMonth()-1,1);bcal()};
+$('bnext').onclick=()=>{bcur=new Date(bcur.getFullYear(),bcur.getMonth()+1,1);bcal()};
+const when=n=>n===0?'¡Hoy!':n===1?'Mañana':'En '+n+' días';
+$('blist').innerHTML=BD.map((x,i)=>{const n=Math.round((x.t-today)/864e5);return '<div class="bi'+(i===0?' first':'')+'" id="b-'+x.p.s+'"><img src="'+x.p.i+'" alt="'+x.p.n+'"><div><b>'+x.p.n+'</b><br><span class="mut">'+x.p.d+' de '+MES[x.p.m-1].toLowerCase()+'</span></div><span class="w">'+when(n)+'</span></div>'}).join('');
+{const g=BD.filter(x=>x.t.getTime()===BD[0].t.getTime()),n=Math.round((BD[0].t-today)/864e5),nm=g.map(x=>x.p.n).join(' y ');
+ $('bcount').innerHTML=g.map(x=>'<img class="av" src="'+x.p.i+'" alt="">').join('')+(n===0?'¡Hoy cumple '+nm+'! 🎉':(n===1?'Falta 1 día':'Faltan '+n+' días')+' para el cumple de '+nm+' 🎂');
+ $('bcount').onclick=()=>goB(g[0].p.s)}
+bcal();
+showTab(location.hash.slice(1));
+</script>
+
+<script>
+(()=>{
+ // CONFIGURACIÓN: sustituye estos dos valores por los de tu proyecto Supabase.
+ const SUPABASE_URL = 'https://uljwhumngqrkdwqixuqq.supabase.co/rest/v1/';
+ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_2JmZ2drUB2TbuY09ZDkZrQ_r4tLLUve';
+ const configured = SUPABASE_URL.startsWith('https://') && !SUPABASE_URL.includes('PEGA_AQUI') && !SUPABASE_PUBLISHABLE_KEY.includes('PEGA_AQUI');
+ const $id=id=>document.getElementById(id);
+ const SESSION='paquillo_current_user_v2';
+ const people=PEOPLE.map(p=>p.n);
+ const names=$id('memberNames');
+ names.innerHTML=people.map(n=>'<option value="'+n.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'"></option>').join('');
+ const slugFor = name => { const p=PEOPLE.find(x=>x.n===name); return p ? p.s : ''; };
+ const emailFor = name => slugFor(name)+'@paquillo-events.com';
+ const loginGate=$id('loginGate');
+ const client = configured && window.supabase ? window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY) : null;
+ let currentProfile=null;
+ function lock(message){document.body.classList.add('auth-locked');loginGate.hidden=false;if(message)$id('loginError').textContent=message;}
+ function addUserTools(username,role){
+   loginGate.hidden=true;document.body.classList.remove('auth-locked');
+   const old=$id('userTools');if(old)old.remove();
+   const tools=document.createElement('div');tools.id='userTools';tools.style.cssText='max-width:1100px;margin:.4rem auto;padding:0 1rem;display:flex;justify-content:flex-end;align-items:center;gap:.7rem;flex-wrap:wrap;font-size:.9rem';
+   tools.innerHTML='<span>👋 '+username+'</span>'+(role==='admin'?'<button type="button" class="btn" id="adminToggle">⚙️ Administración</button>':'')+'<button type="button" class="btn" id="logoutBtn">Salir</button>';
+   document.querySelector('header.top').after(tools);
+   if(role==='admin')$id('adminToggle').onclick=()=>{const a=$id('adminPanel');a.hidden=!a.hidden;if(!a.hidden)renderAdmin()};
+   $id('logoutBtn').onclick=async()=>{await client.auth.signOut();location.reload()};
+   showBirthday(username);
+ }
+ async function loadProfile(user){
+   const {data,error}=await client.from('user_profiles').select('username,role').eq('user_id',user.id).single();
+   if(error||!data)throw new Error('Tu usuario aún no está dado de alta. Contacta con Javi.');
+   return data;
+ }
+ async function enter(user,profile,recordAccess=true){
+   currentProfile=profile;
+   if(recordAccess){try { const {error}=await client.from('access_logs').insert({user_id:user.id}); if(error)console.error('No se pudo registrar el acceso',error); }
+   catch(err){console.error(err)}}
+   localStorage.setItem(SESSION,profile.username);
+   addUserTools(profile.username,profile.role);
+ }
+ async function renderAdmin(){
+   const target=$id('adminContent');target.innerHTML='<p>Consultando estadísticas…</p>';
+   const [{data,error},{data:profiles,error:profileError}]=await Promise.all([
+     client.from('access_logs').select('user_id,created_at').order('created_at',{ascending:false}),
+     client.from('user_profiles').select('user_id,username')
+   ]);
+   if(error||profileError){target.innerHTML='<p class="login-error">No se pudieron cargar las estadísticas. Comprueba las políticas RLS y que el perfil de Javi tenga rol admin.</p>';return}
+   const usernameById=Object.fromEntries((profiles||[]).map(p=>[p.user_id,p.username]));
+   const stats={};people.forEach(n=>stats[n]={count:0,last:null});
+   (data||[]).forEach(row=>{const n=usernameById[row.user_id];if(!n||!stats[n])return;stats[n].count++;if(!stats[n].last)stats[n].last=new Date(row.created_at).toLocaleString('es-ES',{dateStyle:'short',timeStyle:'short'});});
+   const rows=people.map(n=>'<tr><td><b>'+n+'</b></td><td>'+stats[n].count+'</td><td>'+(stats[n].last||'—')+'</td></tr>').join('');
+   const total=(data||[]).length;
+   target.innerHTML='<div class="admin-top"><div><b>📊 Estadísticas globales de acceso</b><p class="admin-note">'+total+' inicios de sesión registrados entre todos los dispositivos.</p></div><button class="btn" type="button" id="refreshStats">Actualizar</button></div><div style="overflow-x:auto"><table class="admin-table"><thead><tr><th>Usuario</th><th>Accesos</th><th>Último acceso</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="admin-note">Los datos se consultan en Supabase. Esta sección solo se muestra a la cuenta de Javi.</p>';
+   $id('refreshStats').onclick=renderAdmin;
+ }
+ const admin=document.createElement('section');admin.id='adminPanel';admin.hidden=true;admin.innerHTML='<h2>⚙️ Administración</h2><div id="adminContent"></div>';
+ document.querySelector('main').append(admin);
+ function showBirthday(username){
+   const now=new Date(),key=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+   const hiddenKey='paquillo_birthday_hidden_'+username+'_'+key;
+   if(localStorage.getItem(hiddenKey))return;
+   const todayPeople=PEOPLE.filter(p=>p.d===now.getDate()&&p.m===now.getMonth()+1);
+   if(!todayPeople.length)return;
+   const own=todayPeople.find(p=>p.n===username);
+   if(own){
+     $id('birthdayTitle').textContent='🎂 ¡Feliz cumpleaños, '+own.n+'!';
+     $id('birthdayIntro').textContent='Hoy la fiesta va por ti. ¡Que tengas un día enorme! 🥳';
+     $id('birthdayPeople').innerHTML='<div class="birthday-person"><img src="'+own.i+'" alt=""><div><b>'+own.n+'</b><br><span>¡Hoy es tu día!</span></div></div>';
+     const others=todayPeople.filter(p=>p.n!==username);
+     if(others.length)$id('birthdayPeople').innerHTML+='<p>Y también cumplen hoy: '+others.map(p=>p.n).join(', ')+'</p>';
+   }else{
+     $id('birthdayTitle').textContent='🎉 Hoy cumple '+todayPeople.map(p=>p.n).join(' y ');
+     $id('birthdayIntro').textContent='¡Acuérdate de felicitarle! Que no se diga que en Paquillo Events se nos pasa una fecha.';
+     $id('birthdayPeople').innerHTML=todayPeople.map(p=>'<div class="birthday-person"><img src="'+p.i+'" alt=""><div><b>'+p.n+'</b><br><span>¡Hoy es su cumpleaños!</span></div></div>').join('');
+   }
+   $id('birthdayGate').hidden=false;
+   const close=()=>{$id('birthdayGate').hidden=true};
+   $id('birthdayClose').onclick=close;
+   $id('birthdayToday').onclick=()=>{localStorage.setItem(hiddenKey,'1');close()};
+ }
+ $id('loginForm').addEventListener('submit',async e=>{
+   e.preventDefault();
+   if(!client){$id('loginError').textContent='Falta configurar Supabase. Sigue los pasos de instalación incluidos en el ZIP.';return;}
+   const username=$id('loginUser').value.trim(),password=$id('loginPass').value;
+   if(!people.includes(username)){$id('loginError').textContent='Usuario o contraseña incorrectos.';return;}
+   const {data,error}=await client.auth.signInWithPassword({email:emailFor(username),password});
+   if(error||!data.user){$id('loginError').textContent='Usuario o contraseña incorrectos.';return;}
+   try{const profile=await loadProfile(data.user);if(profile.username!==username)throw new Error('El usuario no coincide con el perfil.');$id('loginError').textContent='';await enter(data.user,profile);}
+   catch(err){await client.auth.signOut();$id('loginError').textContent=err.message||'No se pudo cargar tu perfil.';}
+ });
+ document.body.classList.add('auth-locked');
+ if(!client){lock('');return;}
+ (async()=>{
+   const {data}=await client.auth.getSession();
+   if(data.session){try{const profile=await loadProfile(data.session.user);await enter(data.session.user,profile,false);}catch(e){await client.auth.signOut();lock(e.message);}}
+   else lock('');
+ })();
+})();
+</script>
+
+</body>
+</html>

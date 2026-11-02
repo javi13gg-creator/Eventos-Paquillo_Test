@@ -1,0 +1,35 @@
+PAQUILLO EVENTS - VERSION CON ACCESO
+====================================
+
+CONTENIDO
+- index.html: web original con la pantalla de acceso, panel de administración y aviso de cumpleaños.
+- Resto de imágenes y stickers: recursos originales incluidos en los ZIP que facilitaste.
+- stickers.zip: recopilación de imágenes WebP para la descarga desde la web.
+
+CREDENCIALES
+- Usuario: el nombre exacto que aparece en la sección Cumples.
+- Contraseña: el mismo nombre exacto (incluidas tildes y mayúsculas).
+- Administración: únicamente el usuario Javi.
+
+FUNCIONAMIENTO
+- La sesión queda guardada en el navegador hasta pulsar «Salir».
+- En el cumpleaños del día aparece un aviso automático.
+- «No volver a mostrar hoy» oculta el aviso para ese usuario y ese día en ese navegador.
+- El panel de Javi muestra el número de inicios de sesión correctos y la fecha/hora del último acceso.
+
+IMPORTANTE: PRIVACIDAD BÁSICA
+Esta implementación es una barrera visual y funcional, NO un sistema de autenticación seguro.
+GitHub Pages sirve los archivos públicamente. Cualquier persona con conocimientos básicos puede
+consultar el código, encontrar la lista de nombres/contraseñas o abrir directamente imágenes.
+Además, las estadísticas y la preferencia de cumpleaños se guardan en localStorage, por lo que
+solo existen en el navegador/dispositivo donde se usan; no se comparten entre usuarios.
+
+Para mantener GitHub Pages y disponer de estadísticas compartidas entre dispositivos habría que
+conectar un servicio externo (por ejemplo Supabase). Para privacidad real también habría que
+proteger los datos y archivos, no basta con ocultar la web tras esta pantalla.
+
+PUBLICACIÓN
+1. Descomprime el ZIP completo.
+2. Sube el contenido de la carpeta (index.html, imágenes, WebP y stickers.zip) a la raíz del
+   repositorio de GitHub Pages, conservando los nombres de los archivos.
+3. Haz commit y espera a que GitHub Pages publique los cambios.

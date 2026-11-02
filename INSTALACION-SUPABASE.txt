@@ -1,0 +1,23 @@
+PAQUILLO EVENTS + SUPABASE
+
+ARCHIVOS
+- index.html: web ya preparada para Supabase.
+- supabase-setup.sql: tablas, perfiles y políticas de seguridad.
+
+PASOS RESUMIDOS
+1) Crea un proyecto en https://supabase.com/dashboard (Free). Región Europe si está disponible.
+2) En Authentication > Users, crea 23 usuarios. Para cada persona usa correo interno <alias>@paquillo-events.com, contraseña igual al nombre exacto (por ejemplo, Leti), y marca el usuario como confirmado/auto-confirmado. No necesitan acceder a ese correo.
+   Alias: leti, adri, alba, carla, david, diego, ines, ivan, joaquin, jb, jorge-r, julia, laura, maria, mireia, richy, roman, rodri, sara, santi, sandra, sofia, javi.
+3) Abre SQL Editor > New query, pega supabase-setup.sql y pulsa Run. Esto crea perfiles, registra a Javi como admin y configura RLS.
+4) En Project Settings > API (o Data API), copia Project URL y la Publishable key (sb_publishable_... o la anon public key antigua). Nunca copies service_role/secret key.
+5) En index.html sustituye PEGA_AQUI_TU_PROJECT_URL y PEGA_AQUI_TU_PUBLISHABLE_KEY por esos dos valores.
+6) Sube index.html y el resto de recursos del ZIP a la raíz del repositorio GitHub Pages.
+7) Prueba: inicia sesión con Javi, abre Administración y verifica que aparece el contador. Prueba después con otra cuenta y vuelve a Javi para comprobar que el contador común sube.
+
+NOTAS
+- No se pide correo real a los miembros. Los correos internos son solo identificadores de Supabase.
+- La contraseña no aparece en la ventana de login ni en textos de ayuda.
+- La contraseña inicial/fija está pensada como el nombre de usuario. Comunícala tú directamente a cada persona.
+- La interfaz sigue siendo de privacidad básica: fotos, HTML y otros recursos del repositorio público siguen siendo accesibles por URL.
+- No publiques nunca la Secret/service_role key. Solo se usa la Publishable key en el navegador; RLS protege las tablas.
+- Si cambias la lista de personas, hay que actualizar los usuarios/perfiles y el array PEOPLE.
